@@ -77,6 +77,13 @@ class Token
     end
     raise "Unexpected tokentype #{@tokentype}"
   end
+  def to_key
+    if @tokentype==:word
+      return @word
+    else
+      return ":noise"
+    end
+  end
 end
 class Frequency
   # inspired by markov chains
@@ -137,8 +144,8 @@ class Frequency
   end
       
   def database()
-    for key in triples()
-      #key = [w1, w2, w3]
+    for arr in triples()
+      key = arr.map{ |t| t.to_key } #[w1, w2, w3]
         
         if @cache.key?(key) then
           @cache[key] += 1
