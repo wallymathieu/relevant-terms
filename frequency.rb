@@ -40,26 +40,39 @@ class FrequencyCounter
     return words
   end
   def pretty_words(sentences)
-    return self.words(sentences).sort{|x,y| x[1]<=>y[1] }.map{|key,value| sprintf("%s: %d",key,value) }.join("\n")
+    return self.words(sentences).sort{|x,y| x[1]<=>y[1] }\
+      .map{|key,value| sprintf("%s: %d",key,value) }.join("\n")
   end
 end
 class Token
   attr_reader :type,:word
-  attr :count
-  def initialize(type,word='')
-    @type = type
+  attr_accessor :count
+  def initialize(tokentype,word='')
+    @tokentype = tokentype
     @word = word
     @count = 1
   end
   def to_s
-    if @type==:word
+    if @tokentype==:word
       return @word
     else
       return ":noise #{@count}"
     end
   end
   def noise?
-    return @type==:noise
+    return @tokentype==:noise
+  end
+  def ==(other_token)
+    if nil==other_token
+      return false
+    end
+    if @tokentype!=other_token.tokentype
+      return false
+    end
+    if @tokentype==:noise
+      return true
+    end
+    return @tokentype == :word && @word == other_token.word
   end
 end
 class Frequency
@@ -75,12 +88,8 @@ class Frequency
     database()
   end
   def pretty_cache()
-    return @cache.map{|key,value| sprintf("'%s': '%s'",key.join(" "),value.join("=")) }.join("\n")
+    return @cache.map{|key,value| sprintf("'%s': '%s'",key.join(" "),value) }.join("\n")
   end
-  #def file_to_words()
-  # words = data.split(" ")
-  # return words
-  #end
   
   def triples()
   # """ Generates triples from the given data string. So if our string were
@@ -102,17 +111,18 @@ class Frequency
         ws=[]
         j=0
         last = nil
-        while ws.length <3 and i+j<=words.length
+        while ws.length <3 && i+j<=words.length
           w = words[i+j]
           if words_of_interest.include?(w)
             t = Token.new(:word,w)
           else
             t = Token.new(:noise)
           end
-          if (last!=nil and last.noise? and t.noise?)
+          if (last!=nil && last.noise? && t.noise?)
             last.count +=1
           else
             ws.push(t)
+            last=t
           end
           j +=1
         end
@@ -125,32 +135,14 @@ class Frequency
       
   def database()
     for w1, w2, w3 in triples()
-      key = [w1, w2]
-      #if [w1,w2,w3].select{|w| not w.noise? }.count>0
+      key = [w1, w2, w3]
         
         if @cache.key?(key) then
-          @cache[key].push(w3)
+          @cache[key] += 1
         else
-          @cache[key] = [w3]
+          @cache[key] = 1
         end
-      #end
     end
-  end
-        
-  def generate_markov_text(size=25)
-    seed = rand(@word_size-3)
-    seed_word, next_word = @words[seed], @words[seed+1]
-    w1, w2 = seed_word, next_word
-    gen_words = []
-    for i in (0..size)
-      gen_words.push(w1)
-      choice = @cache[[w1, w2]]
-      if nil != choice
-        w1, w2 = w2, choice[rand(choice.length)]
-      end
-    end
-    gen_words.push(w2)
-    return gen_words.join(" ")
   end
 end   
 

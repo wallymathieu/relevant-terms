@@ -25,7 +25,7 @@ class FrequencyTests < Test::Unit::TestCase
   def setup
   end
   def testMarkovFrequency
-    markov = Frequency.new(["Ring Olle och sådant","Ring Daniel med mera","Ring Per med flera","Ring Ylva och Lina"],2,2)
-    puts markov.pretty_cache
+    freq = Frequency.new(["Ring Olle och sådant","Ring Daniel med mera","Ring Per med flera","Ring Ylva och Lina"],2,2)
+    puts freq.pretty_cache
   end
 end
