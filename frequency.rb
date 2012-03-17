@@ -45,7 +45,7 @@ class FrequencyCounter
   end
 end
 class Token
-  attr_reader :type,:word
+  attr_reader :tokentype,:word
   attr_accessor :count
   def initialize(tokentype,word='')
     @tokentype = tokentype
@@ -69,10 +69,13 @@ class Token
     if @tokentype!=other_token.tokentype
       return false
     end
-    if @tokentype==:noise
+    if @tokentype == :noise
       return true
     end
-    return @tokentype == :word && @word == other_token.word
+    if @tokentype == :word
+      return @word == other_token.word
+    end
+    raise "Unexpected tokentype #{@tokentype}"
   end
 end
 class Frequency
@@ -134,8 +137,8 @@ class Frequency
   end
       
   def database()
-    for w1, w2, w3 in triples()
-      key = [w1, w2, w3]
+    for key in triples()
+      #key = [w1, w2, w3]
         
         if @cache.key?(key) then
           @cache[key] += 1

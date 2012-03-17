@@ -24,6 +24,14 @@ end
 class FrequencyTests < Test::Unit::TestCase
   def setup
   end
+  def testEquality
+    assert_equal [Token.new(:word,"word"),Token.new(:noise)],\
+      [Token.new(:word,"word"),Token.new(:noise)]
+  end
+  def testEquality2
+    assert_equal [Token.new(:word,"word"),Token.new(:noise),Token.new(:word,"word2")],\
+      [Token.new(:word,"word"),Token.new(:noise),Token.new(:word,"word2")]
+  end
   def testMarkovFrequency
     freq = Frequency.new(["Ring Olle och sådant","Ring Daniel med mera","Ring Per med flera","Ring Ylva och Lina"],2,2)
     puts freq.pretty_cache
