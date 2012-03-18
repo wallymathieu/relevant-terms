@@ -32,8 +32,23 @@ class FrequencyTests < Test::Unit::TestCase
     assert_equal [Token.new(:word,"word"),Token.new(:noise),Token.new(:word,"word2")],\
       [Token.new(:word,"word"),Token.new(:noise),Token.new(:word,"word2")]
   end
-  def testMarkovFrequency
+  def testFrequency
     freq = Frequency.new(["Ring Olle och sådant","Ring Daniel med mera","Ring Per med flera","Ring Ylva och Lina"],2,2)
-    puts freq.pretty_cache
+    #puts freq.pretty_cache
+  end
+  def testFrequencyInStories
+    lines =[]
+    File.open("24117.txt", "r").readlines.each{ |line|
+      line.split(/[\;\.\!\:]/).each{ |line| 
+        l = line.strip.gsub(/,/,' ').gsub(/"/,' ')
+        if l.length >0 && !l.match(/^\[/)
+          lines.push(l)
+        end
+      }
+    }
+    
+    #puts txt.gsub(/\n/, ' ')
+    freq = Frequency.new(lines,8,8)
+    puts freq.cache.select{ |key,value| value >8 }.sort_by{|key,value| value}.map{|key,value| sprintf("'%s': '%s'",key.join(" "),value) }.join("\n")
   end
 end

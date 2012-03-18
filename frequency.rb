@@ -92,7 +92,7 @@ class Frequency
   def initialize(sentences, min_frequence_word_interest=2, max_frequency_noise_word=2)
     @frequencyCounter = FrequencyCounter.new
     @cache = {}
-    @sentences = sentences 
+    @sentences = sentences.map{ |s| s.downcase }
     @min_frequence_word_interest = min_frequence_word_interest
     @max_frequency_noise_word = max_frequency_noise_word
     database()
@@ -109,6 +109,10 @@ class Frequency
     words_of_interest = @frequencyCounter.words(@sentences)\
       .select{ |key,value| value>=@min_frequence_word_interest}\
       .map{ |key,value| key }
+    noise_words = @frequencyCounter.words(@sentences)\
+        .select{ |key,value| value<@min_frequence_word_interest}\
+        .map{ |key,value| key }
+    puts noise_words
     interesting_sentences = @sentences.select{ |sentence| 
       getWords(sentence).select{ |w| words_of_interest.include?(w) }.count>0
     }
