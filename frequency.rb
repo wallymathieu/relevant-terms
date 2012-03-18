@@ -89,12 +89,13 @@ class Frequency
   # inspired by markov chains
   attr_reader :cache
   
-  def initialize(sentences, min_frequence_word_interest=2, max_frequency_noise_word=2)
+  def initialize(sentences, min_frequence_word_interest=2, max_frequency_noise_word=2, max_gram_length=7)
     @frequencyCounter = FrequencyCounter.new
     @cache = {}
     @sentences = sentences.map{ |s| s.downcase }
     @min_frequence_word_interest = min_frequence_word_interest
     @max_frequency_noise_word = max_frequency_noise_word
+    @max_gram_length = max_gram_length
     database()
   end
   def pretty_cache()
@@ -112,26 +113,28 @@ class Frequency
     noise_words = @frequencyCounter.words(@sentences)\
         .select{ |key,value| value<@min_frequence_word_interest}\
         .map{ |key,value| key }
-    puts noise_words
+    #puts noise_words
     interesting_sentences = @sentences.select{ |sentence| 
       getWords(sentence).select{ |w| words_of_interest.include?(w) }.count>0
     }
     retval = []
     #retval.push([{:token=>:word, :text=>'Ring'},{:token=>:noise},{:token=>:word,:test=>'på'}]
-    
     interesting_sentences.each{ |sentence|
       words = getWords(sentence)
-      for i in (0 .. words.length - 2)
+      for i in (0 .. words.length-2)
         ws=[]
         j=0
         last = nil
-        while ws.length <3 && i+j<=words.length
+        # the attention span of an average person is supposedly 
+        # ca 7 entities, thus lets use that for reference 
+        while ws.length <= @max_gram_length && i+j<=words.length
           w = words[i+j]
           if words_of_interest.include?(w)
             t = Token.new(:word,w)
           else
             t = Token.new(:noise)
           end
+          # glob together noise words
           if (last!=nil && last.noise? && t.noise?)
             last.count +=1
           else
@@ -140,7 +143,10 @@ class Frequency
           end
           j +=1
         end
-        retval.push( ws )
+        # filter out noise only lines
+        if ws.select {|w| !w.noise? }.count>0
+          retval.push( ws )
+        end
       end
     }
 
