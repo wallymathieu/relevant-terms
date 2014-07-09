@@ -1,4 +1,3 @@
-require "rubygems"
 require "json/pure"
 class Sentence
   attr_reader :text
