@@ -1,6 +1,6 @@
 #$KCODE = "UTF-8"
 require 'test/unit'
-require File.join(File.dirname(__FILE__),'frequency.rb')
+require_relative 'frequency.rb'
 
 class JsonSentencesParserTests < Test::Unit::TestCase
   def setup
