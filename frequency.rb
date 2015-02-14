@@ -165,3 +165,16 @@ class Frequency
   end
 end   
 
+if __FILE__==$0
+  lines =[]
+  File.open(ARGV[0], "r").readlines.each{ |line|
+    l = line.strip.gsub(/,/,' ').gsub(/"/,' ').gsub(/[_-]/,' ')
+    if l.length >0 && !l.match(/^\[/)
+      lines.push(l)
+    end
+  }
+
+  #puts txt.gsub(/\n/, ' ')
+  freq = Frequency.new(lines,4,4)
+  puts freq.cache.select{ |key,value| value >4 }.sort_by{|key,value| value}.map{|key,value| sprintf("'%s': '%s'",key.join(" "),value) }.join("\n")
+end
