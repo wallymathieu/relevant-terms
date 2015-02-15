@@ -1,66 +1,16 @@
+require_relative 'token'
+require_relative 'frequency_counter'
+
 def get_words(txt)
   return txt.split(" ")
 end
 
-class FrequencyCounter
-  def words(sentences)
-    words={}
-    sentences.each{ |sentence| get_words(sentence)\
-      .each{ |w| if words.key?(w) then words[w]=words[w]+1 else words[w]=1 end } }
-    return words
-  end
-  def pretty_words(sentences)
-    return self.words(sentences).sort{|x,y| x[1]<=>y[1] }\
-      .map{|key,value| sprintf("%s: %d",key,value) }.join("\n")
-  end
-end
-class Token
-  attr_reader :tokentype,:word
-  attr_accessor :count
-  def initialize(tokentype,word='')
-    @tokentype = tokentype
-    @word = word
-    @count = 1
-  end
-  def to_s
-    if @tokentype==:word
-      return @word
-    else
-      return ":noise #{@count}"
-    end
-  end
-  def noise?
-    return @tokentype==:noise
-  end
-  def ==(other_token)
-    if nil==other_token
-      return false
-    end
-    if @tokentype!=other_token.tokentype
-      return false
-    end
-    if @tokentype == :noise
-      return true
-    end
-    if @tokentype == :word
-      return @word == other_token.word
-    end
-    raise "Unexpected tokentype #{@tokentype}"
-  end
-  def to_key
-    if @tokentype==:word
-      return @word
-    else
-      return ":noise"
-    end
-  end
-end
 class Frequency
   # inspired by markov chains
   attr_reader :cache
   
   def initialize(sentences, min_frequence_word_interest=2, max_frequency_noise_word=2, max_gram_length=7)
-    @frequencyCounter = FrequencyCounter.new
+    @frequency_counter = FrequencyCounter.new
     @cache = {}
     @sentences = sentences.map{ |s| s.downcase }
     @min_frequence_word_interest = min_frequence_word_interest
@@ -74,15 +24,13 @@ class Frequency
   
   def triples()
   # """ Generates triples from the given data string. So if our string were
-  #     "What a lovely day", we'd generate (What, a, :noise) and then
+  #     "What a lovely day", we'd generate (What, a, :noise) 
   #     if lovely is not present so often.
   # """
-    words_of_interest = @frequencyCounter.words(@sentences)\
+    words_of_interest = @frequency_counter.words(@sentences)\
       .select{ |key,value| value>=@min_frequence_word_interest}\
       .map{ |key,value| key }
-    noise_words = @frequencyCounter.words(@sentences)\
-        .select{ |key,value| value<@min_frequence_word_interest}\
-        .map{ |key,value| key }
+    
     interesting_sentences = @sentences.select{ |sentence| 
       get_words(sentence).select{ |w| words_of_interest.include?(w) }.count>0
     }

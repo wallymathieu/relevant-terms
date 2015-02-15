@@ -8,12 +8,12 @@ class JsonSentenceParserTests < Test::Unit::TestCase
     @frequencyCounter = FrequencyCounter.new()
   end
   
-  def test1
+  def test_parse_sample_string
     txt = "[{'text':'Ring Olle'},{'text':'Ring Daniel'}]"
     assert_equal "Ring Olle", @parser.parse(txt).first.text
   end
   
-  def testCountFrequency
+  def test_count_frequency
     txt = "[{'text':'Ring Olle'},{'text':'Ring Daniel'}]"
     words = @frequencyCounter.words( @parser.parse(txt).map{ |m| m.text })
     #puts @frequencyCounter.pretty_words( @parser.parse(txt).map{ |m| m.text })

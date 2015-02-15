@@ -4,19 +4,11 @@ require_relative 'frequency'
 class FrequencyTests < Test::Unit::TestCase
   def setup
   end
-  def testEquality
-    assert_equal [Token.new(:word,"word"),Token.new(:noise)],\
-      [Token.new(:word,"word"),Token.new(:noise)]
-  end
-  def testEquality2
-    assert_equal [Token.new(:word,"word"),Token.new(:noise),Token.new(:word,"word2")],\
-      [Token.new(:word,"word"),Token.new(:noise),Token.new(:word,"word2")]
-  end
-  def testFrequency
+  def test_frequency
     freq = Frequency.new(["Ring Olle och sådant","Ring Daniel med mera","Ring Per med flera","Ring Ylva och Lina"],3,3)
     puts freq.pretty_cache
   end
-  def testFrequencyInStories
+  def test_frequency_in_stories
     lines =[]
     File.open("24117.txt", "r").readlines.each{ |line|
       line.split(/[\;\.\!\:]/).each{ |line| 
