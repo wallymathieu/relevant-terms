@@ -1,40 +1,11 @@
-require "json/pure"
-class Sentence
-  attr_reader :text
-  def initialize(text)
-    @text = text
-  end
-  def to_json(*a)
-    {
-      "text"         => @text
-    }.to_json(*a)
-  end
- 
-  def self.json_create(o)
-    new(o["text"])
-  end
-end
-
-class JsonSentencesParser
-  def initialize()
-  end
-  
-  def parse(json)
-    parsed = JSON.parse(json.gsub(/([a-z_]+):/, '"\1":').gsub(/'([a-z]+)':/, '"\1":').gsub(/:'([^']*)'/,':"\1"'))
-    return parsed.map { |d| 
-      Sentence.json_create(d)
-    }
-  end
-end
-
-def getWords(txt)
+def get_words(txt)
   return txt.split(" ")
 end
 
 class FrequencyCounter
   def words(sentences)
     words={}
-    sentences.each{ |sentence| getWords(sentence)\
+    sentences.each{ |sentence| get_words(sentence)\
       .each{ |w| if words.key?(w) then words[w]=words[w]+1 else words[w]=1 end } }
     return words
   end
@@ -103,8 +74,8 @@ class Frequency
   
   def triples()
   # """ Generates triples from the given data string. So if our string were
-  #     "What a lovely day", we'd generate (What, a, lovely) and then
-  #     (a, lovely, day).
+  #     "What a lovely day", we'd generate (What, a, :noise) and then
+  #     if lovely is not present so often.
   # """
     words_of_interest = @frequencyCounter.words(@sentences)\
       .select{ |key,value| value>=@min_frequence_word_interest}\
@@ -112,14 +83,12 @@ class Frequency
     noise_words = @frequencyCounter.words(@sentences)\
         .select{ |key,value| value<@min_frequence_word_interest}\
         .map{ |key,value| key }
-    #puts noise_words
     interesting_sentences = @sentences.select{ |sentence| 
-      getWords(sentence).select{ |w| words_of_interest.include?(w) }.count>0
+      get_words(sentence).select{ |w| words_of_interest.include?(w) }.count>0
     }
     retval = []
-    #retval.push([{:token=>:word, :text=>'Ring'},{:token=>:noise},{:token=>:word,:test=>'på'}]
     interesting_sentences.each{ |sentence|
-      words = getWords(sentence)
+      words = get_words(sentence)
       for i in (0 .. words.length-2)
         ws=[]
         j=0
@@ -174,7 +143,6 @@ if __FILE__==$0
     end
   }
 
-  #puts txt.gsub(/\n/, ' ')
   freq = Frequency.new(lines,4,4)
   puts freq.cache.select{ |key,value| value >4 }.sort_by{|key,value| value}.map{|key,value| sprintf("'%s': '%s'",key.join(" "),value) }.join("\n")
 end
