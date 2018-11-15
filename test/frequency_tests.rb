@@ -1,6 +1,6 @@
 #$KCODE = "UTF-8"
 require 'test/unit'
-require_relative 'frequency'
+require_relative '../lib/frequency'
 class FrequencyTests < Test::Unit::TestCase
   def setup
   end
@@ -10,7 +10,7 @@ class FrequencyTests < Test::Unit::TestCase
   end
   def test_frequency_in_stories
     lines =[]
-    File.open("24117.txt", "r").readlines.each{ |line|
+    File.open("test/24117.txt", "r").readlines.each{ |line|
       line.split(/[\;\.\!\:]/).each{ |line| 
         l = line.strip.gsub(/,/,' ').gsub(/"/,' ')
         if l.length >0 && !l.match(/^\[/)

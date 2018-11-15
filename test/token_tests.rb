@@ -1,5 +1,5 @@
 require 'test/unit'
-require_relative 'token'
+require_relative '../lib/token'
 class TokenTests < Test::Unit::TestCase
   def test_equality
     assert_equal [Token.new(:word,"word"),Token.new(:noise)],\

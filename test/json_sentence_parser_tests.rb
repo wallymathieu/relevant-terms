@@ -1,6 +1,6 @@
 require 'test/unit'
-require_relative 'json_sentence_parser'
-require_relative 'frequency'
+require_relative '../lib/json_sentence_parser'
+require_relative '../lib/frequency'
 
 class JsonSentenceParserTests < Test::Unit::TestCase
   def setup
