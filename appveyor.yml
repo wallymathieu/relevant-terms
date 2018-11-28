@@ -8,7 +8,7 @@ build:
   verbosity: minimal
   publish_nuget: true
 test_script:
-  - dotnet test --configuration Debug test
+  - dotnet run --project test
 nuget:
   account_feed: false
   project_feed: true
