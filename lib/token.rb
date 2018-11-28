@@ -1,17 +1,15 @@
 
 class Token
   attr_reader :tokentype,:word
-  attr_accessor :count
   def initialize(tokentype,word='')
     @tokentype = tokentype
     @word = word
-    @count = 1
   end
   def to_s
     if @tokentype==:word
       return @word
     else
-      return ":noise #{@count}"
+      return ":noise"
     end
   end
   def noise?
@@ -24,7 +22,7 @@ class Token
     if @tokentype!=other_token.tokentype
       return false
     end
-    if @tokentype == :noise
+    if @tokentype == :noise # we know that the other token type is :noise
       return true
     end
     if @tokentype == :word

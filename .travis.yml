@@ -1,0 +1,11 @@
+language: csharp
+dotnet: 2.1.401
+script: 
+  - dotnet restore test
+  - gem install bundler
+  - bundle install
+  - dotnet run --project test
+  - rake test
+branches:
+  only:
+    - master

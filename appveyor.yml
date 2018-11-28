@@ -1,0 +1,18 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+configuration: Release
+before_build:
+  - msbuild /t:restore 
+build:
+  project: relevant-terms.sln
+  verbosity: minimal
+  publish_nuget: true
+test_script:
+  - dotnet run --project test
+nuget:
+  account_feed: false
+  project_feed: true
+  disable_publish_on_pr: true
+branches:
+  only: 
+    - master

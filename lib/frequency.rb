@@ -1,5 +1,4 @@
 require_relative 'token'
-require_relative 'frequency_counter'
 
 def get_words(txt)
   return txt.split(" ")
@@ -7,19 +6,14 @@ end
 
 class Frequency
   # inspired by markov chains
-  attr_reader :cache
   
-  def initialize(sentences, min_frequence_word_interest=2, max_frequency_noise_word=2, max_gram_length=7)
-    @frequency_counter = FrequencyCounter.new
-    @cache = {}
+  def initialize(sentences, min_frequence_word_interest=2, max_gram_length=7)
     @sentences = sentences.map{ |s| s.downcase }
     @min_frequence_word_interest = min_frequence_word_interest
-    @max_frequency_noise_word = max_frequency_noise_word
     @max_gram_length = max_gram_length
-    database()
   end
-  def pretty_cache()
-    return @cache.map{|key,value| sprintf("'%s': '%s'",key.join(" "),value) }.join("\n")
+  def pretty_triples_freq()
+    return triples_freq().map{|key,value| sprintf("'%s': %s",key.join(" "),value) }.join("\n")
   end
   
   def triples()
@@ -27,10 +21,12 @@ class Frequency
   #     "What a lovely day", we'd generate (What, a, :noise) 
   #     if lovely is not present so often.
   # """
-    words_of_interest = @frequency_counter.words(@sentences)\
-      .select{ |key,value| value>=@min_frequence_word_interest}\
+    words_of_interest = @sentences.map { |sentence| get_words sentence }
+      .flatten
+      .group_by { |word| word }
+      .map { |word,grp| [word,grp.length] }
+      .select{ |key,value| value>=@min_frequence_word_interest}
       .map{ |key,value| key }
-    
     interesting_sentences = @sentences.select{ |sentence| 
       get_words(sentence).select{ |w| words_of_interest.include?(w) }.count>0
     }
@@ -43,7 +39,7 @@ class Frequency
         last = nil
         # the attention span of an average person is supposedly 
         # ca 7 entities, thus lets use that for reference 
-        while ws.length <= @max_gram_length && i+j<=words.length
+        while ws.length < @max_gram_length && i+j<words.length
           w = words[i+j]
           if words_of_interest.include?(w)
             t = Token.new(:word,w)
@@ -51,9 +47,7 @@ class Frequency
             t = Token.new(:noise)
           end
           # glob together noise words
-          if (last!=nil && last.noise? && t.noise?)
-            last.count +=1
-          else
+          if ( last==nil || !last.noise? || !t.noise?)
             ws.push(t)
             last=t
           end
@@ -68,19 +62,12 @@ class Frequency
 
     return retval
   end
-      
-  def database()
-    for arr in triples()
-      key = arr.map{ |t| t.to_key } #[w1, w2, w3]
-        
-        if @cache.key?(key) then
-          @cache[key] += 1
-        else
-          @cache[key] = 1
-        end
-    end
+  def triples_freq()
+    triples()
+      .group_by{ |arr| arr.map &:to_key }
+      .map{ |k,v| [k,v.length] }
   end
-end   
+end
 
 if __FILE__==$0
   lines =[]
@@ -91,6 +78,6 @@ if __FILE__==$0
     end
   }
 
-  freq = Frequency.new(lines,4,4)
-  puts freq.cache.select{ |key,value| value >4 }.sort_by{|key,value| value}.map{|key,value| sprintf("'%s': '%s'",key.join(" "),value) }.join("\n")
+  freq = Frequency.new(lines,4)
+  puts freq.triples_freq().select{ |key,value| value >4 }.sort_by{|key,value| value}.map{|key,value| sprintf("'%s': '%s'",key.join(" "),value) }.join("\n")
 end
