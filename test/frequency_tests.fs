@@ -18,7 +18,7 @@ let tests =
               let str = freq|> Seq.filter(fun (key,value)-> value>4) 
                             |> Seq.sortByDescending snd
                             |> Seq.map (fun (key,value)-> sprintf "'%s': %d" (String.concat " " (Array.map Token.toKey key)) value)
-                            |> String.concat Environment.NewLine
+                            |> String.concat "\n"
               let expected = @"'the :term': 25
 'a :term': 15
 ':term and :term': 13
