@@ -1,6 +1,5 @@
 module FrequenceyTests
 open RelevantTerms
-open RelevantTerms.Frequency
 open System.IO
 open System
 open Expecto
@@ -15,7 +14,7 @@ let tests =
     testList "A test group" [
         testCase "one test" <|
             fun _ -> 
-              let freq = tripleFrequency sentencesFrom24117 config
+              let freq = Frequency.triples sentencesFrom24117 config
               let str = freq|> Seq.filter(fun (key,value)-> value>4) 
                             |> Seq.sortByDescending snd
                             |> Seq.map (fun (key,value)-> sprintf "'%s': %d" (String.concat " " (Array.map Token.toKey key)) value)

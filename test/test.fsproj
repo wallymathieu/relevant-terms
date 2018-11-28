@@ -14,6 +14,7 @@
     <PackageReference Include="Expecto.BenchmarkDotNet" Version="8.6.0" />
     <PackageReference Include="Expecto.FsCheck" Version="8.6.0" />
     <PackageReference Include="Expecto.Hopac" Version="8.6.0" />
+    <PackageReference Include="FSharp.Core" Version="4.3.4" />
   </ItemGroup>
   
 </Project>

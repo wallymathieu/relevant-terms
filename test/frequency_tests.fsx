@@ -1,6 +1,5 @@
 #load "../lib/relevant_terms.fs"
 open RelevantTerms
-open RelevantTerms.Frequency
 open System.IO
 open System
 let sentences = 
@@ -9,7 +8,7 @@ let sentences =
   |> Array.map(fun sentence -> sentence.Replace(","," ").Replace("\""," ") )
   |> Array.filter(fun l->l.Length>0 && not <| l.StartsWith "[")
 let config = {Config.Default with minFrequencyWord=4}
-let freq = tripleFrequency sentences config
+let freq = Frequency.triples sentences config
 let str = freq|> Seq.filter(fun (key,value)-> value>4) 
               |> Seq.sortByDescending snd
               |> Seq.map (fun (key,value)-> sprintf "'%s': %d" (String.concat " " (Array.map Token.toKey key)) value)
