@@ -1,5 +1,6 @@
 #$KCODE = "UTF-8"
 require 'test/unit'
+require 'set'
 require_relative '../lib/frequency'
 class FrequencyTests < Test::Unit::TestCase
   def setup
@@ -30,12 +31,12 @@ class FrequencyTests < Test::Unit::TestCase
                 "'very :noise': 5",
                 "':noise to :noise': 5",
                 "':noise and': 5"
-                ].join("\n")
+                ].to_set
     terms = freq.triples_freq()
                       .select{ |key,value| value >4 }
                       .sort_by{|key,value| value}.reverse!
                       .map{|key,value| sprintf("'%s': %s",key.join(" "),value) }
-                      .join("\n")
+                      .to_set
     assert_equal(expected, terms)
   end
 end

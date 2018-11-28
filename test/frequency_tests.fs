@@ -15,11 +15,11 @@ let tests =
         testCase "one test" <|
             fun _ -> 
               let freq = Frequency.triples sentencesFrom24117 config
-              let str = freq|> Seq.filter(fun (key,value)-> value>4) 
+              let freqSet = freq|> Seq.filter(fun (key,value)-> value>4) 
                             |> Seq.sortByDescending snd
                             |> Seq.map (fun (key,value)-> sprintf "'%s': %d" (String.concat " " (Array.map Token.toKey key)) value)
-                            |> String.concat "\n"
-              let expected = @"'the :term': 25
+                            |> Set.ofSeq
+              let expectedStr = @"'the :term': 25
 'a :term': 15
 ':term and :term': 13
 'her :term': 8
@@ -36,5 +36,6 @@ let tests =
 ':term in the :term': 5
 ':term little red': 5
 ':term my child': 5"
-              Expect.equal str expected "Can get counts"
+              let expected = expectedStr.Split([|'\r';'\n'|], StringSplitOptions.RemoveEmptyEntries) |> Set.ofArray
+              Expect.sequenceEqual freqSet expected "Can get counts"
     ]
