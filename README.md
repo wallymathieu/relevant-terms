@@ -4,9 +4,23 @@ Playing around with common patterns in texts. Looks at the frequency of patterns
 
 ## Howto use?
 
+See Frequency tests
+
+## Install and run?
+
+### Ruby
+
 ```
-min_frequence_word_interest=2
-max_frequency_noise_word=2
-max_gram_length=7
-freq = Frequency.new(lines_of_text,min_frequence_word_interest,max_frequency_noise_word, max_gram_length)
+gem install bundler
+bundle install
+bundle exec rake test
 ```
+
+### Mac homebrew with Python3
+
+```
+pip3 install -U nltk
+pip3 install -U numpy
+pip3 install -U scikit-learn
+```
+

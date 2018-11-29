@@ -8,7 +8,7 @@ let sentencesFrom24117 =
   |> Array.collect (fun line-> line.Split([| ';';'.';'!';':' |]))
   |> Array.map(fun sentence -> sentence.Replace(","," ").Replace("\""," ") )
   |> Array.filter(fun l->l.Length>0 && not <| l.StartsWith "[")
-let config = {Config.Default with minFrequencyWord=5}
+let config = {Frequency.Config.Default with minFrequencyWord=5}
 [<Tests>]
 let tests = 
     testList "A test group" [
