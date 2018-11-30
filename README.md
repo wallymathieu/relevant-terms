@@ -19,8 +19,6 @@ bundle exec rake test
 ### Mac homebrew with Python3
 
 ```
-pip3 install -U nltk
-pip3 install -U numpy
-pip3 install -U scikit-learn
+pip3 install --upgrade -r pip-req.txt
 ```
 
